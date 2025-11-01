@@ -1,0 +1,49 @@
+# ---------- Etapa 1: build ----------
+FROM rust:1.79-slim AS builder
+
+RUN apt-get update && apt-get install -y build-essential pkg-config libssl-dev
+
+WORKDIR /usr/src/app
+
+# Cachear dependencias
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir -p src && echo "fn main(){}" > src/main.rs && cargo build --release
+
+# Copiar código real
+RUN rm -rf src
+COPY src ./src
+COPY .sqlx ./.sqlx
+COPY migrations ./migrations
+ENV SQLX_OFFLINE=true
+
+# Compilar binario optimizado
+RUN cargo build --release
+
+
+# ---------- Etapa 2: Lambda Runtime ----------
+FROM public.ecr.aws/lambda/provided:al2023
+
+# Adaptador HTTP para Lambda
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.0 /lambda-adapter /opt/extensions/lambda-adapter
+
+# Copiar binario compilado
+COPY --from=builder /usr/src/app/target/release/flutteractixapp /usr/local/bin/app
+
+# 🔹 Crear bootstrap que Lambda necesita
+RUN printf '#!/bin/sh\nset -euo pipefail\nexec /usr/local/bin/app\n' > /var/runtime/bootstrap \
+ && chmod +x /var/runtime/bootstrap
+
+ # Deja /var/task como workdir (donde tu app espera el config)
+WORKDIR /var/task
+
+# Copia los YAML de configuración al path que la app busca
+COPY configuration ./configuration
+
+
+# Variables de entorno
+ENV PORT=8080
+ENV RUST_LOG=info
+ENV SQLX_OFFLINE=true
+
+# Lambda ejecutará bootstrap automáticamente
+CMD ["/usr/local/bin/app"]

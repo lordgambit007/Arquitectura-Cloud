@@ -1,0 +1,68 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.example.test_drive"
+
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "com.example.test_drive"
+        minSdk = 23
+        targetSdk = 35
+        multiDexEnabled true
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    // Java 17 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Kotlin 17 
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    // buildTypes
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+        debug {
+            signingConfig = signingConfigs.debug
+        }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        dev {
+            dimension "default"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+        }
+        staging {
+            dimension "default"
+            applicationIdSuffix ".staging"
+            versionNameSuffix "-staging"
+        }
+        prod {
+            dimension "default"
+        }
+    }
+
+    dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1' // <-- añade esto
+    }
+}
+
+flutter {
+    source = "../.."
+}

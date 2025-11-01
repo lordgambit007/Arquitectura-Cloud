@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO users (\n            id,\n            username,\n            password,\n            otp_verified,\n            otp_base32,\n            otp_auth_url,\n            created_at,\n            updated_at,\n            recovery_codes,\n            password_is_expired,\n            is_admin\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Bool",
+        "Varchar",
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Text",
+        "Bool",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6d0f065869a42f14363a1dbedfdd0a32cfdc4d0351ffec308fb2e3ba9e5cd4fa"
+}

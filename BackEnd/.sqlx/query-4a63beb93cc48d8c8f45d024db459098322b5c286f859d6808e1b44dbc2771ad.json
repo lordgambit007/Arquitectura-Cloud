@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        DELETE\n        FROM user_tokens\n        WHERE token_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4a63beb93cc48d8c8f45d024db459098322b5c286f859d6808e1b44dbc2771ad"
+}
